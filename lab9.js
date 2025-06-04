@@ -5,10 +5,45 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const output = document.querySelector('output');
-    const firstNum = document.querySelector('#first-num').value;
-    const secondNum = document.querySelector('#second-num').value;
-    const operator = document.querySelector('#operator').value;
-    output.textContent = eval(`${firstNum} ${operator} ${secondNum}`);
+    try {
+      const firstNum = document.querySelector('#first-num').value;
+      const secondNum = document.querySelector('#second-num').value;
+      const opSelector = document.querySelector('#operator').value;
+
+      if(!firstNum || !secondNum || !opSelector) {
+        throw new Error('Calculator inputs or operator dropdown not found in the page.');
+      }
+
+      const firstNumRaw = firstNum.value.trim();
+      const secondNumRaw = secondNum.value.trim();
+      const operator = opSelector.value;
+
+      // Validate that both inputs are non‐empty and numeric
+      if (firstNumRaw === '' || secondNumRaw === '') {
+        throw new Error('Please fill in both number fields before calculating.');
+      }
+
+      const num1 = parseFloat(firstNumRaw);
+      const num2 = parseFloat(secondNumRaw);
+
+      if (Number.isNaN(num1) || Number.isNaN(num2)) {
+        throw new Error(`Invalid number: "${firstNumRaw}" or "${secondNumRaw}" is not a number.`);
+      }
+
+      if (operator === '/' && num2 === 0) {
+        throw new Error('Division by zero is not allowed.');
+      }
+
+      // since we’ve validated everything
+      const result = eval(`${num1} ${operator} ${num2}`);
+      output.textContent = result;
+      console.log('Calculation successful:', `${num1} ${operator} ${num2} = ${result}`);
+    } catch (calcError) { // Catch anything thrown above
+      console.error('Calculator error:', calcError.message);
+      output.textContent = `Error: ${calcError.message}`;
+    } finally {
+      console.log('Calculation attempt finished (finally block).');
+    }
   });
 
   const errorBtns = Array.from(
@@ -87,8 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Console dirxml
   dirxmlBtn.addEventListener('click', () => {
-    const mainElem = document.querySelector('main');
-    console.dirxml(mainElem);
+    try {
+      const mainElem = document.querySelector('main');
+      if (!mainElem) {
+        throw new Error('<main> element missing—cannot dirxml.');
+      }
+      console.dirxml(mainElem);
+    } catch (xmlError) {
+      console.error('console.dirxml error:', xmlError.message);
+    } finally {
+      console.log('dirxml handler finished.');
+    }
   });
 
   // Console Group Start
@@ -123,7 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // End Timer (console.timeEnd)
   endTimerBtn.addEventListener('click', () => {
-    console.timeEnd('MyTimer');
+    try{
+      console.timeEnd('MyTimer');
+    } catch (timerError) {
+      console.error('Timer error:', timerError.message);
+    }
   });
 
   // Console Trace
