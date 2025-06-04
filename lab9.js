@@ -1,5 +1,20 @@
 // lab9.js
 
+const originalOnError = window.onerror;
+
+window.onerror = function (message, source, lineno, colno, errorObj) {
+  if (typeof originalOnError === 'function') {
+    originalOnError(message, source, lineno, colno, errorObj);
+  }
+  console.log(`Global error caught:
+    message= ${message}
+    source=  ${source}
+    line=    ${lineno}, col= ${colno}
+    errorObj:`, errorObj);
+
+    return true;
+}
+
 class CalculatorError extends Error {
   constructor(message) {
     super(message);
