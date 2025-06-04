@@ -139,4 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     levelOne();
   });
+
+  // Trigger a Global Error
+  triggerErrorBtn.addEventListener('click', () => {
+    throw new Error('Trigger a Global Error!');
+  });
 });
