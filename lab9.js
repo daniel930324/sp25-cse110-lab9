@@ -1,17 +1,24 @@
 // lab9.js
 
+class CalculatorError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'CalculatorError';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   let form = document.querySelector('form');
   form.addEventListener('submit', e => {
     e.preventDefault();
     const output = document.querySelector('output');
     try {
-      const firstNum = document.querySelector('#first-num').value;
-      const secondNum = document.querySelector('#second-num').value;
-      const opSelector = document.querySelector('#operator').value;
+      const firstNum = document.querySelector('#first-num');
+      const secondNum = document.querySelector('#second-num');
+      const opSelector = document.querySelector('#operator');
 
       if(!firstNum || !secondNum || !opSelector) {
-        throw new Error('Calculator inputs or operator dropdown not found in the page.');
+        throw new CalculatorError('Calculator inputs or operator dropdown not found in the page.');
       }
 
       const firstNumRaw = firstNum.value.trim();
@@ -20,18 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Validate that both inputs are non‐empty and numeric
       if (firstNumRaw === '' || secondNumRaw === '') {
-        throw new Error('Please fill in both number fields before calculating.');
+        throw new CalculatorError('Please fill in both number fields before calculating.');
       }
 
-      const num1 = parseFloat(firstNumRaw);
-      const num2 = parseFloat(secondNumRaw);
+      const num1 = Number(firstNumRaw);
+      const num2 = Number(secondNumRaw);
 
       if (Number.isNaN(num1) || Number.isNaN(num2)) {
-        throw new Error(`Invalid number: "${firstNumRaw}" or "${secondNumRaw}" is not a number.`);
+        throw new CalculatorError(`Invalid number: "${firstNumRaw}" or "${secondNumRaw}" is not a number.`);
       }
 
       if (operator === '/' && num2 === 0) {
-        throw new Error('Division by zero is not allowed.');
+        throw new CalculatorError('Division by zero is not allowed.');
       }
 
       // since we’ve validated everything
@@ -39,8 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
       output.textContent = result;
       console.log('Calculation successful:', `${num1} ${operator} ${num2} = ${result}`);
     } catch (calcError) { // Catch anything thrown above
-      console.error('Calculator error:', calcError.message);
-      output.textContent = `Error: ${calcError.message}`;
+      if (calcError instanceof CalculatorError) {
+        console.error('Calculator error:', calcError.message);
+        output.textContent = `Error: ${calcError.message}`;
+      }
     } finally {
       console.log('Calculation attempt finished (finally block).');
     }
@@ -78,28 +87,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Console Error
   errorBtn.addEventListener('click', () => {
     console.error(
-      'This simulates an error message in red.'
+      'Console Error Demo'
     );
   });
 
   // Console Count
   countBtn.addEventListener('click', () => {
-    console.count('Count‑Button‑Clicks');
+    console.count('Count Button');
   });
 
   // Console Warn
   warnBtn.addEventListener('click', () => {
     console.warn(
-      'You clicked the warning button.'
+      'Console Warn Button.'
     );
   });
 
   // Console Assert
   assertBtn.addEventListener('click', () => {
-    const randomNumber = Math.floor(Math.random() * 10);
+    const number = 2;
     console.assert(
-      randomNumber >= 5,
-      `Assertion failed: randomNumber (${randomNumber}) < 5`
+      number >= 3,
+      `The number does not equal 3`
     );
   });
 
@@ -168,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // End Timer (console.timeEnd)
   endTimerBtn.addEventListener('click', () => {
     try{
-      console.timeEnd('MyTimer');
+      console.timeEnd('Timer');
     } catch (timerError) {
       console.error('Timer error:', timerError.message);
     }
